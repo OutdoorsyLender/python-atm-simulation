@@ -1,0 +1,36 @@
+@startuml ATM
+skinparam state {
+    BackgroundColor White
+    BorderColor Black
+    FontName Arial
+}
+
+state Ready {
+    state entry: "Welcome"
+}
+
+state PinCheck {
+    state entry: "GetPin"
+    state exit: "CheckPin"
+}
+
+state Cash {
+    state entry: "ShowBalance"
+    state exit: "UpdateBalance"
+}
+
+state Locked {
+    state entry: "ShowError"
+}
+
+[*] --> Ready
+Ready --> PinCheck : card [valid] / read
+PinCheck --> Cash : pin [ok] / access
+PinCheck --> PinCheck : pin [wrong] / count++
+PinCheck --> Locked : pin [count > 3] / lock
+Cash --> End : withdraw [balance = 0] / close
+Cash --> End : exit / eject
+Locked --> End : timeout / eject
+End --> [*]
+
+@enduml
